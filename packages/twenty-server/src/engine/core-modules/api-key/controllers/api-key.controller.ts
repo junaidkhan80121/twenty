@@ -36,9 +36,11 @@ import { AccessPolicyGuard } from 'src/engine/guards/access-policy.guard';
 @Controller([`${ApiPath.Rest}/apiKeys`, `${ApiPath.Rest}/metadata/apiKeys`])
 @UseGuards(JwtAuthGuard)
 @UseFilters(
-  PermissionsRestApiExceptionFilter,
+  // Nest tries the last filter first. Permissions must be last so
+  // permission refusals return 403 instead of the catch-all 400 (#29889).
   RestApiExceptionFilter,
   AuthRestApiExceptionFilter,
+  PermissionsRestApiExceptionFilter,
 )
 export class ApiKeyController {
   constructor(private readonly apiKeyService: ApiKeyService) {}
